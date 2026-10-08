@@ -1,0 +1,34 @@
+.card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  color: inherit;
+  font: inherit;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.media {
+  position: relative;
+  display: flex;
+}
+
+.image {
+  width: 240px;
+  max-width: 100%;
+  height: auto;
+  object-fit: contain;
+}
+
+.price {
+  display: flex;
+  align-items: center;
+  column-gap: 8px;
+}
+
+.name {
+  margin: 0;
+  text-align: center;
+}
