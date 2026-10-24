@@ -1,7 +1,8 @@
 .burger_ingredients {
   display: flex;
+  flex-grow: 1;
   flex-direction: column;
-  width: 600px;
+  width: 100%;
   min-height: 0;
   color: var(--text-primary-color);
 }
@@ -30,7 +31,7 @@
 .cards {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 24px 8px;
+  gap: 32px 24px;
   margin: 0;
   padding: 0;
   list-style-type: none;

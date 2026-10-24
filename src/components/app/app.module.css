@@ -8,13 +8,6 @@
   background-color: var(--background-alt);
 }
 
-.title {
-  width: 100%;
-  max-width: 1260px;
-  margin-right: auto;
-  margin-left: auto;
-}
-
 .main {
   display: flex;
   flex-grow: 1;
@@ -24,6 +17,13 @@
   margin: 0 auto;
   overflow: hidden;
   column-gap: 40px;
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+  width: 600px;
+  min-height: 0;
 }
 
 .status {

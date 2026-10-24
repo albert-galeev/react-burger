@@ -27,23 +27,23 @@ export const Modal = ({ children, title, onClose }: TModalProps): React.JSX.Elem
     return (): void => {
       document.removeEventListener('keydown', handleEscape);
     };
-  }, []);
+  }, [onClose]);
 
   return ReactDOM.createPortal(
     <>
       <ModalOverlay onClick={onClose} />
       <div className={`${styles.modal} pt-10 pr-10 pb-15 pl-10`}>
-        <header className={styles.header}>
+        {title && (
           <h2 className={`${styles.title} text text_type_main-large`}>{title}</h2>
-          <button
-            type="button"
-            className={styles.close}
-            aria-label="Закрыть модальное окно"
-            onClick={onClose}
-          >
-            <CloseIcon type="primary" />
-          </button>
-        </header>
+        )}
+        <button
+          type="button"
+          className={`${styles.close} ${title ? '' : styles.close_lowered}`}
+          aria-label="Закрыть модальное окно"
+          onClick={onClose}
+        >
+          <CloseIcon type="primary" />
+        </button>
         {children}
       </div>
     </>,

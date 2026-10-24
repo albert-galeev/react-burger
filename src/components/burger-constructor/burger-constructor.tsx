@@ -1,82 +1,92 @@
-import {
-  Button,
-  ConstructorElement,
-  CurrencyIcon,
-  DragIcon,
-} from '@krgaa/react-developer-burger-ui-components';
-import { useState } from 'react';
+import { Button, CurrencyIcon } from '@krgaa/react-developer-burger-ui-components';
+import { useRef } from 'react';
+import { useDrop } from 'react-dnd';
 
+import { ConstructorBun } from '@components/constructor-bun/constructor-bun';
+import { ConstructorIngredient } from '@components/constructor-ingredient/constructor-ingredient';
 import { Modal } from '@components/modal/modal';
 import { OrderDetails } from '@components/order-details/order-details';
-import { getBurgerPrice } from '@utils/burger';
+import {
+  addIngredient,
+  selectBurgerPrice,
+  selectCanPlaceOrder,
+  selectConstructorBun,
+  selectConstructorIngredients,
+  selectOrderIngredientIds,
+} from '@services/burger-constructor/constructor-slice';
+import { useAppDispatch, useAppSelector } from '@services/hooks';
+import { placeOrder } from '@services/order/order-actions';
+import { closeOrderModal, selectIsOrderModalOpen } from '@services/order/order-slice';
+import { DND_TYPES } from '@utils/constants';
 
-import type { TBurger } from '@utils/types';
+import type { TIngredient, TSortDragItem } from '@utils/types';
 
 import styles from './burger-constructor.module.css';
 
-type TBurgerConstructorProps = {
-  burger: TBurger;
-};
+export const BurgerConstructor = (): React.JSX.Element => {
+  const dispatch = useAppDispatch();
+  const bun = useAppSelector(selectConstructorBun);
+  const ingredients = useAppSelector(selectConstructorIngredients);
+  const totalPrice = useAppSelector(selectBurgerPrice);
+  const canPlaceOrder = useAppSelector(selectCanPlaceOrder);
+  const orderIngredientIds = useAppSelector(selectOrderIngredientIds);
+  const isOrderModalOpen = useAppSelector(selectIsOrderModalOpen);
 
-export const BurgerConstructor = ({
-  burger,
-}: TBurgerConstructorProps): React.JSX.Element => {
-  const [isOrderOpen, setIsOrderOpen] = useState(false);
+  const sectionRef = useRef<HTMLElement>(null);
+  const fillingsRef = useRef<HTMLDivElement>(null);
 
-  function handleOpenModal(): void {
-    setIsOrderOpen(true);
+  const [{ canDrop }, dropFilling] = useDrop<TIngredient, void, { canDrop: boolean }>({
+    accept: DND_TYPES.INGREDIENT,
+    drop: (item): void => {
+      dispatch(addIngredient(item));
+    },
+    collect: (monitor) => ({ canDrop: monitor.canDrop() }),
+  });
+
+  dropFilling(fillingsRef);
+
+  const [, dropSorted] = useDrop<TSortDragItem, void, unknown>({
+    accept: DND_TYPES.SORT,
+    drop: (): void => {
+      // Порядок уже изменён обработчиком hover, дополнительных действий не нужно.
+    },
+  });
+
+  dropSorted(sectionRef);
+
+  function handlePlaceOrder(): void {
+    void dispatch(placeOrder(orderIngredientIds));
   }
 
   function handleCloseModal(): void {
-    setIsOrderOpen(false);
+    dispatch(closeOrderModal());
   }
 
-  const { bun, fillings } = burger;
-  const totalPrice = getBurgerPrice(burger);
-  const isOrderDisabled = !bun && fillings.length === 0;
-
   return (
-    <section className={`${styles.burger_constructor} pt-25 pl-4`}>
-      {bun && (
-        <div className={`${styles.bun} mb-4 ml-8`}>
-          <ConstructorElement
-            type="top"
-            isLocked={true}
-            text={`${bun.name} (верх)`}
-            price={bun.price}
-            thumbnail={bun.image}
-          />
-        </div>
-      )}
-      {fillings.length > 0 ? (
-        <ul className={`${styles.list} custom-scroll pr-2`}>
-          {fillings.map((filling) => (
-            <li className={styles.item} key={filling.uid}>
-              <DragIcon type="primary" />
-              <ConstructorElement
-                text={filling.name}
-                price={filling.price}
-                thumbnail={filling.image}
+    <section ref={sectionRef} className={`${styles.burger_constructor} pt-25 pl-4`}>
+      <ConstructorBun bun={bun} position="top" />
+      <div ref={fillingsRef} className={styles.fillings}>
+        {ingredients.length > 0 ? (
+          <ul className={`${styles.list} custom-scroll pr-2`}>
+            {ingredients.map((ingredient, index) => (
+              <ConstructorIngredient
+                key={ingredient.uid}
+                ingredient={ingredient}
+                index={index}
               />
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <p className={`${styles.empty} ml-8 text text_type_main-default`}>
-          Перетащите сюда начинки и соусы
-        </p>
-      )}
-      {bun && (
-        <div className={`${styles.bun} mt-4 ml-8`}>
-          <ConstructorElement
-            type="bottom"
-            isLocked={true}
-            text={`${bun.name} (низ)`}
-            price={bun.price}
-            thumbnail={bun.image}
-          />
-        </div>
-      )}
+            ))}
+          </ul>
+        ) : (
+          <p
+            className={`${styles.placeholder} ${
+              canDrop ? styles.placeholder_droppable : ''
+            } ml-8 mr-4 text text_type_main-default`}
+          >
+            Выберите начинку
+          </p>
+        )}
+      </div>
+      <ConstructorBun bun={bun} position="bottom" />
       <div className={`${styles.total} mt-10 mr-4`}>
         <p className={`${styles.price} text text_type_digits-medium`}>
           {totalPrice}
@@ -86,13 +96,13 @@ export const BurgerConstructor = ({
           htmlType="button"
           type="primary"
           size="large"
-          disabled={isOrderDisabled}
-          onClick={handleOpenModal}
+          disabled={!canPlaceOrder}
+          onClick={handlePlaceOrder}
         >
           Оформить заказ
         </Button>
       </div>
-      {isOrderOpen && (
+      {isOrderModalOpen && (
         <Modal onClose={handleCloseModal}>
           <OrderDetails />
         </Modal>
