@@ -18,13 +18,19 @@ export type TIngredient = {
 /**
  * Ингредиент внутри конструктора. Один и тот же ингредиент можно добавить
  * несколько раз, поэтому `_id` не годится в качестве ключа списка — для этого
- * у элемента конструктора есть собственный идентификатор `uid`.
+ * при добавлении генерируется собственный идентификатор `uid` (nanoid).
  */
 export type TConstructorIngredient = TIngredient & {
   uid: string;
 };
 
 export type TBurger = {
-  bun: TIngredient | null;
-  fillings: TConstructorIngredient[];
+  bun: TConstructorIngredient | null;
+  ingredients: TConstructorIngredient[];
+};
+
+export type TSortDragItem = {
+  uid: string;
+  index: number;
+  initialIndex: number;
 };

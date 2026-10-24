@@ -32,3 +32,7 @@
   margin: 0;
   text-align: center;
 }
+
+.card_dragging {
+  opacity: 0.4;
+}

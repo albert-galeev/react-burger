@@ -1,38 +1,32 @@
 import { Tab } from '@krgaa/react-developer-burger-ui-components';
-import { useMemo, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 
 import { IngredientCard } from '@components/ingredient-card/ingredient-card';
 import { IngredientDetails } from '@components/ingredient-details/ingredient-details';
 import { Modal } from '@components/modal/modal';
+import { selectIngredientCounters } from '@services/burger-constructor/constructor-slice';
+import { useAppDispatch, useAppSelector } from '@services/hooks';
+import {
+  clearIngredientDetails,
+  selectIngredientDetails,
+} from '@services/ingredient-details/ingredient-details-slice';
+import { selectIngredientGroups } from '@services/ingredients/ingredients-slice';
 import { INGREDIENT_TABS } from '@utils/constants';
 
-import type { TIngredient, TIngredientType } from '@utils/types';
+import type { TIngredientType } from '@utils/types';
 
 import styles from './burger-ingredients.module.css';
 
-type TBurgerIngredientsProps = {
-  ingredients: TIngredient[];
-  counters: Record<string, number>;
-};
+export const BurgerIngredients = (): React.JSX.Element => {
+  const dispatch = useAppDispatch();
+  const groups = useAppSelector(selectIngredientGroups);
+  const counters = useAppSelector(selectIngredientCounters);
+  const selectedIngredient = useAppSelector(selectIngredientDetails);
 
-export const BurgerIngredients = ({
-  ingredients,
-  counters,
-}: TBurgerIngredientsProps): React.JSX.Element => {
   const [currentTab, setCurrentTab] = useState<TIngredientType>('bun');
-  const [selectedIngredient, setSelectedIngredient] = useState<TIngredient | null>(null);
 
   const groupsRef = useRef<HTMLUListElement>(null);
   const groupRefs = useRef<Partial<Record<TIngredientType, HTMLLIElement | null>>>({});
-
-  const groups = useMemo(
-    () =>
-      INGREDIENT_TABS.map((tab) => ({
-        ...tab,
-        items: ingredients.filter((ingredient) => ingredient.type === tab.value),
-      })),
-    [ingredients]
-  );
 
   function handleTabClick(value: string): void {
     setCurrentTab(value as TIngredientType);
@@ -69,7 +63,7 @@ export const BurgerIngredients = ({
   }
 
   function handleCloseModal(): void {
-    setSelectedIngredient(null);
+    dispatch(clearIngredientDetails());
   }
 
   return (
@@ -109,7 +103,6 @@ export const BurgerIngredients = ({
                   key={ingredient._id}
                   ingredient={ingredient}
                   count={counters[ingredient._id] ?? 0}
-                  onClick={setSelectedIngredient}
                 />
               ))}
             </ul>

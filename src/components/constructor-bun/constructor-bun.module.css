@@ -1,0 +1,22 @@
+.slot {
+  display: flex;
+  flex-shrink: 0;
+  flex-direction: column;
+}
+
+.placeholder {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 80px;
+  margin: 0;
+  background-color: var(--background-element);
+  border-radius: var(--common-border-radius-s);
+  outline: 2px dashed transparent;
+  outline-offset: -2px;
+  transition: var(--common-transition);
+}
+
+.placeholder_droppable {
+  outline-color: var(--colors-interface-accent);
+}
