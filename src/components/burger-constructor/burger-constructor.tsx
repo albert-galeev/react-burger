@@ -1,6 +1,7 @@
 import { Button, CurrencyIcon } from '@krgaa/react-developer-burger-ui-components';
 import { useRef } from 'react';
 import { useDrop } from 'react-dnd';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 import { ConstructorBun } from '@components/constructor-bun/constructor-bun';
 import { ConstructorIngredient } from '@components/constructor-ingredient/constructor-ingredient';
@@ -17,7 +18,8 @@ import {
 import { useAppDispatch, useAppSelector } from '@services/hooks';
 import { placeOrder } from '@services/order/order-actions';
 import { closeOrderModal, selectIsOrderModalOpen } from '@services/order/order-slice';
-import { DND_TYPES } from '@utils/constants';
+import { selectUser } from '@services/user/user-slice';
+import { DND_TYPES, ROUTES } from '@utils/constants';
 
 import type { TIngredient, TSortDragItem } from '@utils/types';
 
@@ -31,6 +33,9 @@ export const BurgerConstructor = (): React.JSX.Element => {
   const canPlaceOrder = useAppSelector(selectCanPlaceOrder);
   const orderIngredientIds = useAppSelector(selectOrderIngredientIds);
   const isOrderModalOpen = useAppSelector(selectIsOrderModalOpen);
+  const user = useAppSelector(selectUser);
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const sectionRef = useRef<HTMLElement>(null);
   const fillingsRef = useRef<HTMLDivElement>(null);
@@ -55,6 +60,12 @@ export const BurgerConstructor = (): React.JSX.Element => {
   dropSorted(sectionRef);
 
   function handlePlaceOrder(): void {
+    if (!user) {
+      void navigate(ROUTES.LOGIN, { state: { from: location } });
+
+      return;
+    }
+
     void dispatch(placeOrder(orderIngredientIds));
   }
 

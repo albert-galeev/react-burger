@@ -18,7 +18,6 @@ const config: Config = {
       },
     ],
     'comment-whitespace-inside': 'always',
-    'declaration-block-single-line-max-declarations': 1,
     'declaration-empty-line-before': 'never',
     'font-family-name-quotes': 'always-unless-keyword',
     'function-url-no-scheme-relative': true,

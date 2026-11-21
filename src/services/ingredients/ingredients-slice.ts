@@ -33,6 +33,8 @@ export const ingredientsSlice = createSlice({
     selectIngredients: selectItems,
     selectIngredientsLoading: (state): boolean => state.isLoading,
     selectIngredientsError: (state): string | null => state.error,
+    selectIngredientById: (state, id: string | undefined): TIngredient | undefined =>
+      state.items.find(({ _id }) => _id === id),
     /** Ингредиенты, разложенные по группам в порядке вкладок навигации. */
     selectIngredientGroups: createSelector([selectItems], (items): TIngredientGroup[] =>
       INGREDIENT_TABS.map(({ value, title }) => ({
@@ -65,6 +67,7 @@ export const ingredientsSlice = createSlice({
 });
 
 export const {
+  selectIngredientById,
   selectIngredients,
   selectIngredientsError,
   selectIngredientsLoading,

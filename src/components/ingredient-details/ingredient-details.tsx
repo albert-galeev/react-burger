@@ -1,18 +1,31 @@
-import type { TIngredient } from '@utils/types';
+import { Preloader } from '@krgaa/react-developer-burger-ui-components';
+import { useParams } from 'react-router-dom';
+
+import { useAppSelector } from '@services/hooks';
+import {
+  selectIngredientById,
+  selectIngredientsLoading,
+} from '@services/ingredients/ingredients-slice';
 
 import styles from './ingredient-details.module.css';
 
-type TIngredientDetailsProps = {
-  ingredient: TIngredient;
-};
+export const IngredientDetails = (): React.JSX.Element => {
+  const { id } = useParams<'id'>();
+  const ingredient = useAppSelector((state) => selectIngredientById(state, id));
+  const isLoading = useAppSelector(selectIngredientsLoading);
 
-export const IngredientDetails = ({
-  ingredient,
-}: TIngredientDetailsProps): React.JSX.Element => {
+  if (!ingredient) {
+    return isLoading ? (
+      <Preloader />
+    ) : (
+      <p className="text text_type_main-medium">Ингредиент не найден</p>
+    );
+  }
+
   const { image_large, name, calories, proteins, fat, carbohydrates } = ingredient;
 
   const nutrition = [
-    { title: 'Калории, ккал', value: calories },
+    { title: 'Калории,ккал', value: calories },
     { title: 'Белки, г', value: proteins },
     { title: 'Жиры, г', value: fat },
     { title: 'Углеводы, г', value: carbohydrates },
@@ -21,8 +34,8 @@ export const IngredientDetails = ({
   return (
     <div className={styles.details}>
       <img className={styles.image} src={image_large} alt={name} />
-      <h3 className={`${styles.name} text text_type_main-medium mt-4`}>{name}</h3>
-      <ul className={`${styles.nutrition} mt-8`}>
+      <h3 className={`${styles.name} text text_type_main-medium`}>{name}</h3>
+      <ul className={styles.nutrition}>
         {nutrition.map(({ title, value }) => (
           <li className={styles.item} key={title}>
             <p className="text text_type_main-default text_color_inactive">{title}</p>
