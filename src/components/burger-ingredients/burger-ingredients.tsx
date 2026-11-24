@@ -2,14 +2,8 @@ import { Tab } from '@krgaa/react-developer-burger-ui-components';
 import { useRef, useState } from 'react';
 
 import { IngredientCard } from '@components/ingredient-card/ingredient-card';
-import { IngredientDetails } from '@components/ingredient-details/ingredient-details';
-import { Modal } from '@components/modal/modal';
 import { selectIngredientCounters } from '@services/burger-constructor/constructor-slice';
-import { useAppDispatch, useAppSelector } from '@services/hooks';
-import {
-  clearIngredientDetails,
-  selectIngredientDetails,
-} from '@services/ingredient-details/ingredient-details-slice';
+import { useAppSelector } from '@services/hooks';
 import { selectIngredientGroups } from '@services/ingredients/ingredients-slice';
 import { INGREDIENT_TABS } from '@utils/constants';
 
@@ -18,10 +12,8 @@ import type { TIngredientType } from '@utils/types';
 import styles from './burger-ingredients.module.css';
 
 export const BurgerIngredients = (): React.JSX.Element => {
-  const dispatch = useAppDispatch();
   const groups = useAppSelector(selectIngredientGroups);
   const counters = useAppSelector(selectIngredientCounters);
-  const selectedIngredient = useAppSelector(selectIngredientDetails);
 
   const [currentTab, setCurrentTab] = useState<TIngredientType>('bun');
 
@@ -60,10 +52,6 @@ export const BurgerIngredients = (): React.JSX.Element => {
     });
 
     setCurrentTab(nearestTab);
-  }
-
-  function handleCloseModal(): void {
-    dispatch(clearIngredientDetails());
   }
 
   return (
@@ -109,11 +97,6 @@ export const BurgerIngredients = (): React.JSX.Element => {
           </li>
         ))}
       </ul>
-      {selectedIngredient && (
-        <Modal title="Детали ингредиента" onClose={handleCloseModal}>
-          <IngredientDetails ingredient={selectedIngredient} />
-        </Modal>
-      )}
     </section>
   );
 };

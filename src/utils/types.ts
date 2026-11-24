@@ -1,3 +1,5 @@
+import type { Location } from 'react-router-dom';
+
 export type TIngredientType = 'bun' | 'main' | 'sauce';
 
 export type TIngredient = {
@@ -34,3 +36,26 @@ export type TSortDragItem = {
   index: number;
   initialIndex: number;
 };
+
+export type TUser = {
+  email: string;
+  name: string;
+};
+
+export type TLocationState = {
+  from?: Location;
+  backgroundLocation?: Location;
+};
+
+export type TServerResponse<T> = { success: boolean } & T;
+
+export type TTokensResponse = TServerResponse<{
+  accessToken: string;
+  refreshToken: string;
+}>;
+
+export type TAuthResponse = TTokensResponse & { user: TUser };
+
+export type TUserResponse = TServerResponse<{ user: TUser }>;
+
+export type TMessageResponse = TServerResponse<{ message: string }>;

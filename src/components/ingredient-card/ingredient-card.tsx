@@ -1,6 +1,7 @@
 import { Counter, CurrencyIcon } from '@krgaa/react-developer-burger-ui-components';
 import { useRef } from 'react';
 import { useDrag } from 'react-dnd';
+import { Link, useLocation } from 'react-router-dom';
 
 import { useAppDispatch } from '@services/hooks';
 import { setIngredientDetails } from '@services/ingredient-details/ingredient-details-slice';
@@ -22,7 +23,8 @@ export const IngredientCard = ({
   const { image, name, price } = ingredient;
 
   const dispatch = useAppDispatch();
-  const cardRef = useRef<HTMLButtonElement>(null);
+  const location = useLocation();
+  const cardRef = useRef<HTMLAnchorElement>(null);
 
   const [{ isDragging }, drag] = useDrag<TIngredient, void, { isDragging: boolean }>({
     type: ingredient.type === 'bun' ? DND_TYPES.BUN : DND_TYPES.INGREDIENT,
@@ -38,8 +40,9 @@ export const IngredientCard = ({
 
   return (
     <li>
-      <button
-        type="button"
+      <Link
+        to={`/ingredients/${ingredient._id}`}
+        state={{ backgroundLocation: location }}
         ref={cardRef}
         className={`${styles.card} ${isDragging ? styles.card_dragging : ''} pl-4 pr-4`}
         onClick={handleClick}
@@ -53,7 +56,7 @@ export const IngredientCard = ({
           <CurrencyIcon type="primary" />
         </p>
         <p className={`${styles.name} text text_type_main-default mt-1`}>{name}</p>
-      </button>
+      </Link>
     </li>
   );
 };

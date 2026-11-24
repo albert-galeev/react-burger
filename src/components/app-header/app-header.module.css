@@ -21,6 +21,10 @@
   text-decoration: none;
 }
 
+.link_feed {
+  margin-left: 48px;
+}
+
 .link_active {
   color: var(--text-primary-color);
 }
